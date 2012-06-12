@@ -2129,8 +2129,6 @@ static int select_idle_sibling(struct task_struct *p, int target)
 	int cpu = smp_processor_id();
 	int prev_cpu = task_cpu(p);
 	struct sched_domain *sd;
-	struct sched_group *sg;
-	int i;
 
 	if (target == cpu && idle_cpu(cpu))
 		return cpu;
@@ -2138,32 +2136,26 @@ static int select_idle_sibling(struct task_struct *p, int target)
 	if (target == prev_cpu && idle_cpu(prev_cpu))
 		return prev_cpu;
 
+<<<<<<< HEAD
 	if (!sysctl_sched_wake_to_idle &&
 	    !(current->flags & PF_WAKE_UP_IDLE) &&
 	    !(p->flags & PF_WAKE_UP_IDLE))
 		return target;
 
+=======
+	/*
+	 * Otherwise, check assigned siblings to find an elegible idle cpu.
+	 */
+>>>>>>> b86b78b... sched: Improve scalability via 'CPU buddies', which withstand random perturbations
 	sd = rcu_dereference(per_cpu(sd_llc, target));
+
 	for_each_lower_domain(sd) {
-		sg = sd->groups;
-		do {
-			if (!cpumask_intersects(sched_group_cpus(sg),
-						tsk_cpus_allowed(p)))
-				goto next;
-
-			for_each_cpu(i, sched_group_cpus(sg)) {
-				if (!idle_cpu(i))
-					goto next;
-			}
-
-			target = cpumask_first_and(sched_group_cpus(sg),
-					tsk_cpus_allowed(p));
-			goto done;
-next:
-			sg = sg->next;
-		} while (sg != sd->groups);
+		if (!cpumask_test_cpu(sd->idle_buddy, tsk_cpus_allowed(p)))
+			continue;
+		if (idle_cpu(sd->idle_buddy))
+			return sd->idle_buddy;
 	}
-done:
+
 	return target;
 }
 
