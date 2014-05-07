@@ -339,17 +339,26 @@ int adreno_ringbuffer_start(struct adreno_ringbuffer *rb)
 
 	cp_rb_cntl.f.rb_blksz = ilog2(KGSL_RB_BLKSIZE >> 3);
 
+<<<<<<< HEAD
 	if (adreno_is_a2xx(adreno_dev)) {
 		
 		cp_rb_cntl.f.rb_poll_en = GSL_RB_CNTL_POLL_EN;
 	}
+=======
+	return status;
+}
+>>>>>>> 243f761... msm: kgsl: Get rid of KGSL_FLAGS_STARTED
 
 	
 	cp_rb_cntl.f.rb_no_update =  GSL_RB_CNTL_NO_UPDATE;
 
+<<<<<<< HEAD
 	adreno_regwrite(device, REG_CP_RB_CNTL, cp_rb_cntl.val);
 
 	adreno_regwrite(device, REG_CP_RB_BASE, rb->buffer_desc.gpuaddr);
+=======
+	_ringbuffer_setup_common(rb);
+>>>>>>> 243f761... msm: kgsl: Get rid of KGSL_FLAGS_STARTED
 
 	adreno_regwrite(device, REG_CP_RB_RPTR_ADDR,
 			     rb->memptrs_desc.gpuaddr +
@@ -365,8 +374,23 @@ int adreno_ringbuffer_start(struct adreno_ringbuffer *rb)
 			     KGSL_MEMSTORE_OFFSET(KGSL_MEMSTORE_GLOBAL,
 				     soptimestamp));
 
+<<<<<<< HEAD
 	adreno_regwrite(device, REG_SCRATCH_UMSK,
 			     GSL_RB_MEMPTRS_SCRATCH_MASK);
+=======
+/**
+ * adreno_ringbuffer_cold_start() - Ringbuffer cold start
+ * @rb: Pointer to adreno ringbuffer
+ *
+ * Start the ringbuffer from power collapse.
+ */
+int adreno_ringbuffer_cold_start(struct adreno_ringbuffer *rb)
+{
+	int status;
+	struct kgsl_device *device = rb->device;
+	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
+
+>>>>>>> 243f761... msm: kgsl: Get rid of KGSL_FLAGS_STARTED
 
 	
 	status = adreno_ringbuffer_load_pm4_ucode(device);
@@ -402,6 +426,7 @@ int adreno_ringbuffer_start(struct adreno_ringbuffer *rb)
 	return status;
 }
 
+<<<<<<< HEAD
 void adreno_ringbuffer_stop(struct adreno_ringbuffer *rb)
 {
 	struct kgsl_device *device = rb->device;
@@ -415,6 +440,8 @@ void adreno_ringbuffer_stop(struct adreno_ringbuffer *rb)
 	}
 }
 
+=======
+>>>>>>> 243f761... msm: kgsl: Get rid of KGSL_FLAGS_STARTED
 int adreno_ringbuffer_init(struct kgsl_device *device)
 {
 	int status;

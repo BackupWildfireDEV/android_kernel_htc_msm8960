@@ -1510,6 +1510,7 @@ static int adreno_start(struct kgsl_device *device)
 	kgsl_pwrctrl_irq(device, KGSL_PWRFLAGS_ON);
 	device->ftbl->irqctrl(device, 1);
 
+<<<<<<< HEAD
 	status = adreno_ringbuffer_start(&adreno_dev->ringbuffer);
 	if (status)
 		goto error_irq_off;
@@ -1517,6 +1518,16 @@ static int adreno_start(struct kgsl_device *device)
 
 	if (KGSL_STATE_DUMP_AND_FT != device->state)
 		mod_timer(&device->idle_timer, jiffies + FIRST_TIMEOUT);
+=======
+	adreno_perfcounter_start(adreno_dev);
+
+	status = adreno_ringbuffer_cold_start(&adreno_dev->ringbuffer);
+	if (status)
+		goto error_irq_off;
+
+	/* Start the dispatcher */
+	adreno_dispatcher_start(device);
+>>>>>>> 243f761... msm: kgsl: Get rid of KGSL_FLAGS_STARTED
 
 	if (!adreno_is_a2xx(adreno_dev))
 		adreno_perfcounter_start(adreno_dev);
@@ -1564,7 +1575,11 @@ static int adreno_stop(struct kgsl_device *device)
 
 	adreno_dev->drawctxt_active = NULL;
 
+<<<<<<< HEAD
 	adreno_ringbuffer_stop(&adreno_dev->ringbuffer);
+=======
+	adreno_dispatcher_stop(adreno_dev);
+>>>>>>> 243f761... msm: kgsl: Get rid of KGSL_FLAGS_STARTED
 
 	kgsl_mmu_stop(&device->mmu);
 
@@ -2738,6 +2753,7 @@ static int adreno_ringbuffer_drain(struct kgsl_device *device,
 			if (adreno_ft_detect(device, regs))
 				return -ETIMEDOUT;
 
+<<<<<<< HEAD
 			wait = jiffies + msecs_to_jiffies(KGSL_TIMEOUT_PART);
 		}
 		GSL_RB_GET_READPTR(rb, &rb->rptr);
@@ -2748,6 +2764,10 @@ static int adreno_ringbuffer_drain(struct kgsl_device *device,
 			return -ETIMEDOUT;
 		}
 	} while (rb->rptr != rb->wptr);
+=======
+	if (kgsl_pwrctrl_isenabled(device))
+		device->ftbl->irqctrl(device, 0);
+>>>>>>> 243f761... msm: kgsl: Get rid of KGSL_FLAGS_STARTED
 
 	return 0;
 }

@@ -934,6 +934,7 @@ static void kgsl_iommu_setstate(struct kgsl_mmu *mmu,
 				struct kgsl_pagetable *pagetable,
 				unsigned int context_id)
 {
+<<<<<<< HEAD
 	if (mmu->flags & KGSL_FLAGS_STARTED) {
 		if (mmu->hwpagetable != pagetable) {
 			unsigned int flags = 0;
@@ -944,6 +945,21 @@ static void kgsl_iommu_setstate(struct kgsl_mmu *mmu,
 			kgsl_setstate(mmu, context_id,
 				KGSL_MMUFLAGS_PTUPDATE | flags);
 		}
+=======
+	int ret = 0;
+
+	/* page table not current, then setup mmu to use new
+	 *  specified page table
+	 */
+	if (mmu->hwpagetable != pagetable) {
+		unsigned int flags = 0;
+		mmu->hwpagetable = pagetable;
+		flags |= kgsl_mmu_pt_get_flags(mmu->hwpagetable,
+						mmu->device->id) |
+						KGSL_MMUFLAGS_TLBFLUSH;
+		ret = kgsl_setstate(mmu, context_id,
+			KGSL_MMUFLAGS_PTUPDATE | flags);
+>>>>>>> 243f761... msm: kgsl: Get rid of KGSL_FLAGS_STARTED
 	}
 }
 
@@ -1196,9 +1212,6 @@ static int kgsl_iommu_start(struct kgsl_mmu *mmu)
 	struct kgsl_iommu *iommu = mmu->priv;
 	int i, j;
 
-	if (mmu->flags & KGSL_FLAGS_STARTED)
-		return 0;
-
 	if (mmu->defaultpagetable == NULL) {
 		status = kgsl_iommu_setup_defaultpagetable(mmu);
 		if (status)
@@ -1255,8 +1268,12 @@ static int kgsl_iommu_start(struct kgsl_mmu *mmu)
 				KGSL_IOMMU_SETSTATE_NOP_OFFSET,
 				cp_nop_packet(1), sizeof(unsigned int));
 
+<<<<<<< HEAD
 	kgsl_iommu_disable_clk_on_ts(mmu, 0, false);
 	mmu->flags |= KGSL_FLAGS_STARTED;
+=======
+	kgsl_iommu_disable_clk(mmu, KGSL_IOMMU_MAX_UNITS);
+>>>>>>> 243f761... msm: kgsl: Get rid of KGSL_FLAGS_STARTED
 
 done:
 	if (status) {
@@ -1366,9 +1383,30 @@ static void kgsl_iommu_stop(struct kgsl_mmu *mmu)
 			}
 			mmu->fault = 0;
 		}
+<<<<<<< HEAD
 	}
 	
 	iommu->clk_event_queued = false;
+=======
+		kgsl_iommu_disable_clk(mmu, KGSL_IOMMU_MAX_UNITS);
+		atomic_set(&mmu->fault, 0);
+	}
+}
+
+static void kgsl_iommu_stop(struct kgsl_mmu *mmu)
+{
+	/*
+	 *  stop device mmu
+	 *
+	 *  call this with the global lock held
+	 *  detach iommu attachment
+	 */
+	kgsl_detach_pagetable_iommu_domain(mmu);
+	mmu->hwpagetable = NULL;
+
+	kgsl_iommu_pagefault_resume(mmu);
+	/* switch off MMU clocks and cancel any events it has queued */
+>>>>>>> 243f761... msm: kgsl: Get rid of KGSL_FLAGS_STARTED
 	kgsl_cancel_events(mmu->device, mmu);
 	kgsl_iommu_disable_clk(mmu);
 }
