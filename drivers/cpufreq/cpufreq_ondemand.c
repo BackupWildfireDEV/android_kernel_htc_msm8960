@@ -1347,10 +1347,22 @@ set_freq:
 		if (dbs_tuners_ins.powersave_bias)
 			freq_next = powersave_bias_target(policy, freq_next, CPUFREQ_RELATION_L);
 
+<<<<<<< HEAD
 		trace_cpufreq_interactive_target (policy->cpu, cur_load, policy->cur, freq_next);
 		__cpufreq_driver_target(policy, freq_next,
 			CPUFREQ_RELATION_L);
 		trace_cpufreq_interactive_down (policy->cpu, freq_next, policy->cur);
+=======
+				if (policy->cur <= dbs_tuners_ins.freq_down_step_barrier) {
+					new_freq_next = freq_next;
+				}
+			}
+
+			freq_next = new_freq_next;
+		}
+
+		__cpufreq_driver_target(policy, freq_next, CPUFREQ_RELATION_C);
+>>>>>>> 8eb40a4... Ondemand:Use new frequency relation
 	}
 }
 
