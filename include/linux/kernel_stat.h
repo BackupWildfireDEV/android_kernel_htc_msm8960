@@ -95,8 +95,13 @@ static inline unsigned int kstat_irqs(unsigned int irq)
 
 	return sum;
 }
+static inline unsigned int kstat_irqs_usr(unsigned int irq)
+{
+	return kstat_irqs(irq);
+}
 #else
 extern unsigned int kstat_irqs(unsigned int irq);
+extern unsigned int kstat_irqs_usr(unsigned int irq);
 #endif
 
 static inline unsigned int kstat_cpu_irqs_sum(unsigned int cpu)

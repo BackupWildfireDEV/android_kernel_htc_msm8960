@@ -31,19 +31,23 @@
  * 	1) Vendor ID
  * 	2) Product ID
  * 	3) Class ID
- */static const struct usb_device_id usb_quirk_list[] = {
-	
+ */
+static const struct usb_device_id usb_quirk_list[] = {
+	/* CBM - Flash disk */
 	{ USB_DEVICE(0x0204, 0x6025), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	
+	/* HP 5300/5370C scanner */
 	{ USB_DEVICE(0x03f0, 0x0701), .driver_info =
 			USB_QUIRK_STRING_FETCH_255 },
 
+	/* Creative SB Audigy 2 NX */
+	{ USB_DEVICE(0x041e, 0x3020), .driver_info = USB_QUIRK_RESET_RESUME },
+
+	/* Microsoft Wireless Laser Mouse 6000 Receiver */
+	{ USB_DEVICE(0x045e, 0x00e1), .driver_info = USB_QUIRK_RESET_RESUME },
+
 	/* Microsoft LifeCam-VX700 v2.0 */
 	{ USB_DEVICE(0x045e, 0x0770), .driver_info = USB_QUIRK_RESET_RESUME },
-
-	/* Logitech Webcam C200 */
-	{ USB_DEVICE(0x041e, 0x3020), .driver_info = USB_QUIRK_RESET_RESUME },
 
 	/* Logitech Quickcam Fusion */
 	{ USB_DEVICE(0x046d, 0x08c1), .driver_info = USB_QUIRK_RESET_RESUME },
@@ -66,10 +70,10 @@
 	/* Logitech Harmony 700-series */
 	{ USB_DEVICE(0x046d, 0xc122), .driver_info = USB_QUIRK_DELAY_INIT },
 
-	
+	/* Philips PSC805 audio device */
 	{ USB_DEVICE(0x0471, 0x0155), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	
+	/* Artisman Watchdog Dongle */
 	{ USB_DEVICE(0x04b4, 0x0526), .driver_info =
 			USB_QUIRK_CONFIG_INTF_STRINGS },
 
@@ -108,34 +112,33 @@
 	/* appletouch */
 	{ USB_DEVICE(0x05ac, 0x021a), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	
+	/* Avision AV600U */
 	{ USB_DEVICE(0x0638, 0x0a13), .driver_info =
 	  USB_QUIRK_STRING_FETCH_255 },
 
-	
+	/* Saitek Cyborg Gold Joystick */
 	{ USB_DEVICE(0x06a3, 0x0006), .driver_info =
 			USB_QUIRK_CONFIG_INTF_STRINGS },
 
-	
+	/* Guillemot Webcam Hercules Dualpix Exchange (2nd ID) */
 	{ USB_DEVICE(0x06f8, 0x0804), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	
+	/* Guillemot Webcam Hercules Dualpix Exchange*/
 	{ USB_DEVICE(0x06f8, 0x3005), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	
+	/* Midiman M-Audio Keystation 88es */
 	{ USB_DEVICE(0x0763, 0x0192), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	
+	/* M-Systems Flash Disk Pioneers */
 	{ USB_DEVICE(0x08ec, 0x1000), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	
+	/* Keytouch QWERTY Panel keyboard */
 	{ USB_DEVICE(0x0926, 0x3333), .driver_info =
 			USB_QUIRK_CONFIG_INTF_STRINGS },
 
-	
+	/* X-Rite/Gretag-Macbeth Eye-One Pro display colorimeter */
 	{ USB_DEVICE(0x0971, 0x2000), .driver_info = USB_QUIRK_NO_SET_INTF },
 
-	
 	/* Broadcom BCM92035DGROM BT dongle */
 	{ USB_DEVICE(0x0a5c, 0x2021), .driver_info = USB_QUIRK_RESET_RESUME },
 
@@ -146,20 +149,24 @@
 	{ USB_DEVICE(0x10d6, 0x2200), .driver_info =
 			USB_QUIRK_STRING_FETCH_255 },
 
-	
+	/* SKYMEDI USB_DRIVE */
 	{ USB_DEVICE(0x1516, 0x8628), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	
+	/* Razer - Razer Blade Keyboard */
+	{ USB_DEVICE(0x1532, 0x0116), .driver_info =
+			USB_QUIRK_LINEAR_UFRAME_INTR_BINTERVAL },
+
+	/* BUILDWIN Photo Frame */
 	{ USB_DEVICE(0x1908, 0x1315), .driver_info =
 			USB_QUIRK_HONOR_BNUMINTERFACES },
 
-	
+	/* INTEL VALUE SSD */
 	{ USB_DEVICE(0x8086, 0xf1a5), .driver_info = USB_QUIRK_RESET_RESUME },
 
-	
+	/* Protocol and OTG Electrical Test Device */
 	{ USB_DEVICE(0x1a0a, 0x0200), .driver_info = USB_QUIRK_OTG_PET },
 
-	{ }  
+	{ }  /* terminating entry must be last */
 };
 
 static const struct usb_device_id usb_interface_quirk_list[] = {
@@ -170,6 +177,10 @@ static const struct usb_device_id usb_interface_quirk_list[] = {
 	/* ASUS Base Station(T100) */
 	{ USB_DEVICE(0x0b05, 0x17e0), .driver_info =
 			USB_QUIRK_IGNORE_REMOTE_WAKEUP },
+
+	/* Protocol and OTG Electrical Test Device */
+	{ USB_DEVICE(0x1a0a, 0x0200), .driver_info =
+			USB_QUIRK_LINEAR_UFRAME_INTR_BINTERVAL },
 
 	{ }  /* terminating entry must be last */
 };
@@ -219,6 +230,9 @@ static u32 __usb_detect_quirks(struct usb_device *udev,
 	return quirks;
 }
 
+/*
+ * Detect any quirks the device has, and do any housekeeping for it if needed.
+ */
 void usb_detect_quirks(struct usb_device *udev)
 {
 	udev->quirks = __usb_detect_quirks(udev, usb_quirk_list);
@@ -226,16 +240,20 @@ void usb_detect_quirks(struct usb_device *udev)
 		dev_dbg(&udev->dev, "USB quirks for this device: %x\n",
 			udev->quirks);
 
-	
-#if 0		
-	
+	/* For the present, all devices default to USB-PERSIST enabled */
+#if 0		/* was: #ifdef CONFIG_PM */
+	/* Hubs are automatically enabled for USB-PERSIST */
 	if (udev->descriptor.bDeviceClass == USB_CLASS_HUB)
 		udev->persist_enabled = 1;
 
 #else
+	/* In the absence of PM, we can safely enable USB-PERSIST
+	 * for all devices.  It will affect things like hub resets
+	 * and EMF-related port disables.
+	 */
 	if (!(udev->quirks & USB_QUIRK_RESET_MORPHS))
 		udev->persist_enabled = 1;
-#endif	
+#endif	/* CONFIG_PM */
 }
 
 void usb_detect_interface_quirks(struct usb_device *udev)
