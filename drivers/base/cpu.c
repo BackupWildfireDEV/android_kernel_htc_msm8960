@@ -316,7 +316,6 @@ void __init cpu_dev_init(void)
 		panic("Failed to register CPU subsystem");
 
 	cpu_dev_register_generic();
-<<<<<<< HEAD
 
 #if defined(CONFIG_SCHED_MC) || defined(CONFIG_SCHED_SMT)
 	sched_create_sysfs_power_savings_entries(cpu_subsys.dev_root);
@@ -324,6 +323,4 @@ void __init cpu_dev_init(void)
 #if defined(CONFIG_HOTPLUG_CPU)
 	register_reboot_notifier(&cpu_restart_notifier);
 #endif
-=======
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 }

@@ -2192,15 +2192,7 @@ select_task_rq_fair(struct task_struct *p, int sd_flag, int wake_flags)
 		if (!(tmp->flags & SD_LOAD_BALANCE))
 			continue;
 
-<<<<<<< HEAD
 		if (tmp->flags & (SD_POWERSAVINGS_BALANCE|SD_PREFER_LOCAL)) {
-=======
-		/*
-		 * If power savings logic is enabled for a domain, see if we
-		 * are not overloaded, if so, don't balance wider.
-		 */
-		if (tmp->flags & (SD_PREFER_LOCAL)) {
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 			unsigned long power = 0;
 			unsigned long nr_running = 0;
 			unsigned long capacity;
@@ -2212,6 +2204,9 @@ select_task_rq_fair(struct task_struct *p, int sd_flag, int wake_flags)
 			}
 
 			capacity = DIV_ROUND_CLOSEST(power, SCHED_POWER_SCALE);
+
+			if (tmp->flags & SD_POWERSAVINGS_BALANCE)
+				nr_running /= 2;
 
 			if (nr_running < capacity)
 				want_sd = 0;
@@ -2743,7 +2738,6 @@ struct sd_lb_stats {
 	unsigned long busiest_has_capacity;
 	unsigned int  busiest_group_weight;
 
-<<<<<<< HEAD
 	int group_imb; 
 #if defined(CONFIG_SCHED_MC) || defined(CONFIG_SCHED_SMT)
 	int power_savings_balance; 
@@ -2753,9 +2747,6 @@ struct sd_lb_stats {
 	unsigned long leader_nr_running; 
 	unsigned long min_nr_running; 
 #endif
-=======
-	int group_imb; /* Is there imbalance in this sd */
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 };
 
 struct sg_lb_stats {
@@ -2791,7 +2782,6 @@ static inline int get_sd_load_idx(struct sched_domain *sd,
 	return load_idx;
 }
 
-<<<<<<< HEAD
 
 #if defined(CONFIG_SCHED_MC) || defined(CONFIG_SCHED_SMT)
 static inline void init_sd_power_savings_stats(struct sched_domain *sd,
@@ -2879,8 +2869,6 @@ static inline int check_power_save_busiest_group(struct sd_lb_stats *sds,
 #endif 
 
 
-=======
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 unsigned long default_scale_freq_power(struct sched_domain *sd, int cpu)
 {
 	return SCHED_POWER_SCALE;
@@ -3117,12 +3105,8 @@ static inline void update_sd_lb_stats(struct sched_domain *sd, int this_cpu,
 	if (child && child->flags & SD_PREFER_SIBLING)
 		prefer_sibling = 1;
 
-<<<<<<< HEAD
 	init_sd_power_savings_stats(sd, sds, idle);
 	load_idx = get_sd_load_idx(sd, idle);
-=======
-	load_idx = get_sd_load_idx(env->sd, env->idle);
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 
 	do {
 		int local_group;
@@ -3160,6 +3144,7 @@ static inline void update_sd_lb_stats(struct sched_domain *sd, int this_cpu,
 			sds->group_imb = sgs.group_imb;
 		}
 
+		update_sd_power_savings_stats(sg, sds, local_group, &sgs);
 		sg = sg->next;
 	} while (sg != sd->groups);
 }
@@ -3333,11 +3318,8 @@ force_balance:
 	return sds.busiest;
 
 out_balanced:
-<<<<<<< HEAD
 	if (check_power_save_busiest_group(&sds, this_cpu, imbalance))
 		return sds.busiest;
-=======
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 ret:
 	*imbalance = 0;
 	return NULL;
@@ -3392,12 +3374,9 @@ static int need_active_balance(struct sched_domain *sd, int idle,
 
 		if ((sd->flags & SD_ASYM_PACKING) && busiest_cpu > this_cpu)
 			return 1;
-<<<<<<< HEAD
 
 		if (sched_mc_power_savings < POWERSAVINGS_BALANCE_WAKEUP)
 			return 0;
-=======
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 	}
 
 	return unlikely(sd->nr_balance_failed > sd->cache_nice_tries+2);
@@ -3653,7 +3632,6 @@ static struct {
 	unsigned long next_balance;     
 } nohz ____cacheline_aligned;
 
-<<<<<<< HEAD
 #if defined(CONFIG_SCHED_MC) || defined(CONFIG_SCHED_SMT)
 static inline struct sched_domain *lowest_flag_domain(int cpu, int flag)
 {
@@ -3671,13 +3649,11 @@ static inline struct sched_domain *lowest_flag_domain(int cpu, int flag)
 		(sd && (sd->flags & flag)); sd = sd->parent)
 
 static int find_new_ilb(int cpu)
-=======
-static inline int find_new_ilb(int call_cpu)
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 {
 	int ilb = cpumask_first(nohz.idle_cpus_mask);
+	struct sched_group *ilbg;
+	struct sched_domain *sd;
 
-<<<<<<< HEAD
 	if (!(sched_smt_power_savings || sched_mc_power_savings))
 		goto out_done;
 
@@ -3704,22 +3680,17 @@ unlock:
 	rcu_read_unlock();
 
 out_done:
-=======
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 	if (ilb < nr_cpu_ids && idle_cpu(ilb))
 		return ilb;
 
 	return nr_cpu_ids;
 }
-<<<<<<< HEAD
 #else 
 static inline int find_new_ilb(int call_cpu)
 {
 	return nr_cpu_ids;
 }
 #endif
-=======
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 
 static void nohz_balancer_kick(int cpu)
 {

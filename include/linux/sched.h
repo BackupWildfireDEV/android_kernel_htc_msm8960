@@ -637,7 +637,6 @@ enum cpu_idle_type {
 #define SCHED_POWER_SCALE	(1L << SCHED_POWER_SHIFT)
 
 #ifdef CONFIG_SMP
-<<<<<<< HEAD
 #define SD_LOAD_BALANCE		0x0001	
 #define SD_BALANCE_NEWIDLE	0x0002	
 #define SD_BALANCE_EXEC		0x0004	
@@ -692,24 +691,6 @@ static inline int sd_power_saving_flags(void)
 	return 0;
 }
 
-=======
-#define SD_LOAD_BALANCE		0x0001	/* Do load balancing on this domain. */
-#define SD_BALANCE_NEWIDLE	0x0002	/* Balance when about to become idle */
-#define SD_BALANCE_EXEC		0x0004	/* Balance on exec */
-#define SD_BALANCE_FORK		0x0008	/* Balance on fork, clone */
-#define SD_BALANCE_WAKE		0x0010  /* Balance on wakeup */
-#define SD_WAKE_AFFINE		0x0020	/* Wake task to waking CPU */
-#define SD_PREFER_LOCAL		0x0040  /* Prefer to keep tasks local to this domain */
-#define SD_SHARE_CPUPOWER	0x0080	/* Domain members share cpu power */
-#define SD_SHARE_PKG_RESOURCES	0x0200	/* Domain members share cpu pkg resources */
-#define SD_SERIALIZE		0x0400	/* Only a single load balancing instance */
-#define SD_ASYM_PACKING		0x0800  /* Place busy groups earlier in the domain */
-#define SD_PREFER_SIBLING	0x1000	/* Prefer to place tasks in a sibling domain */
-#define SD_OVERLAP		0x2000	/* sched_domains of this level overlap */
-
-extern int __weak arch_sd_sibiling_asym_packing(void);
-
->>>>>>> cde49e7... sched: Remove stale power aware scheduling remnants and dysfunctional knobs
 struct sched_group_power {
 	atomic_t ref;
 	unsigned int power, power_orig;
